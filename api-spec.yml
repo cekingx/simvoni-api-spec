@@ -1,0 +1,487 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: SIMVONI API Spec
+  license:
+    name: MIT
+paths:
+  /super-admin/election-authority:
+    get:
+      description: Dashboard Super Admin. Berisi list Election Authority
+      tags:
+        - "super-admin"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: "#/components/schemas/ElectionAuthorities"
+    post:
+      description: Membuat Election Authority
+      tags:
+        - "super-admin"
+      parameters:
+        - name: username
+          in: query
+          schema:
+            type: string
+        - name: name
+          in: query
+          schema:
+            type: string
+        - name: password
+          in: query
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      name: 
+                        type: string
+                      username:
+                        type: string
+                      role:
+                        type: string
+                    
+  /super-admin/election-authority/{ea_id}:
+    get:
+      description: Detail Election Authority
+      tags:
+        - "super-admin"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: "#/components/schemas/ElectionAuthority"
+
+  /ea/election:
+    get:
+      description: Dashboard Election Authority. Berisi election yang telah dibuat
+      tags:
+        - "election-authority"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: "#/components/schemas/Elections"
+    post:
+      description: Membuat election
+      tags:
+        - "election-authority"
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+        - name: description
+          in: query
+          schema:
+            type: string
+        - name: start
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      wallet_address:
+                        type: string
+
+  /ea/election/{election_id}:
+    get:
+      description: Detail sebuah election
+      tags:
+        - "election-authority"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: "#/components/schemas/Election"
+
+  /ea/election/{election_id}/candidate:
+    get:
+      description: List kandidat yang terdaftar dalam election
+      tags:
+        - "election-authority"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: "#/components/schemas/Candidates"
+    post:
+      description: Menambahkan kandidat
+      tags:
+        - "election-authority"
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+        - name: visi
+          in: query
+          schema:
+            type: string
+        - name: misi
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: pengalaman
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /ea/election/{election_id}/verify-voter:
+    get:
+      description: List voter yang mendaftar di suatu election
+      tags:
+        - "election-authority"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Voters"
+
+
+  /:
+    get:
+      description: 
+        Dashboard voter. Berisi list election yang sedang terjadi
+      tags:
+        - "simvoni"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: "#/components/schemas/Elections"
+
+  /{election_id}:
+    get:
+      description: 
+        Detail election
+      tags:
+        - "simvoni"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      election:
+                        $ref: "#/components/schemas/Election"
+                      candidates:
+                        $ref: "#/components/schemas/Candidates"
+    post:
+      description: 
+        Voter menggunakan hak suara untuk memilih kandidat
+      tags:
+        - "simvoni"
+      parameters:
+        - name: candidate_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Candidate"
+  
+  /{election_id}/result:
+    get:
+      description: 
+        Hasil election
+      tags:
+        - "simvoni"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      total_votes: 
+                        type: integer
+                      candidate_votes:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              candidate_id:
+                                type: integer
+                              candidate_votes:
+                                type: integer
+
+  /candidate/{candidate_id}:
+    get:
+      description: 
+        Detail kandidat election
+      tags:
+        - "simvoni"
+      responses:
+        '201':
+          description: Suara anda telah disimpan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: "#/components/schemas/Candidate"
+
+  /login:
+    post:
+      description: 
+        Login untuk mendapatkan token
+      tags:
+        - "simvoni"
+      parameters:
+        - name: username
+          in: query
+          schema:
+            type: string
+        - name: password
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Berhasil login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                      name:
+                        type: string
+                      role:
+                        type: string
+                      token:
+                        type: string
+        '403':
+          description: Gagal login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+
+components:
+  schemas:
+    ElectionAuthority:
+      type: object
+      properties:
+        ea_id:
+          type: integer
+        ea_username:
+          type: string
+        ea_name:
+          type: string
+        ea_description:
+          type: string
+        ea_wallet_address:
+          type: string
+        ea_loggin_at:
+          type: string
+          format: datetime
+    ElectionAuthorities:
+      type: array
+      items:
+        $ref: "#/components/schemas/ElectionAuthority"
+    Voter:
+      type: object
+      properties:
+        id: 
+          type: integer
+        username:
+          type: string
+        name:
+          type: string
+        wallet_address:
+          type: string
+        is_verified:
+          type: boolean
+    Voters:
+      type: array
+      items:
+        $ref: "#/components/schemas/Voter"
+    Election:
+      type: object
+      properties:
+        election_id:
+          type: integer
+        election_name:
+          type: string
+        election_authority:
+          type: string
+        election_start:
+          type: string
+          format: date
+        election_end:
+          type: string
+          format: date
+        election_description:
+          type: string
+    Elections:
+      type: array
+      items:
+        $ref: "#/components/schemas/Election"
+    Candidate:
+      type: object
+      properties:
+        candidate_id:
+          type: integer
+        candidate_name:
+          type: string
+        candidate_visi:
+          type: string
+        candidate_misi:
+          type: array
+          items:
+            type: string
+        candidate_pengalaman:
+          type: array
+          items:
+            type: string
+    Candidates:
+      type: array
+      items:
+        $ref: "#/components/schemas/Candidate"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+    NotFoundError:
+      description: Data not found
+    BadRequest:
+      description: Bad Request
